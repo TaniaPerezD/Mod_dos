@@ -1,0 +1,36 @@
+.header{
+  background: #0f3a37;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 3px 0;
+}
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.brand img{ width: 28px; height: 28px; }
+
+.nav{ display: flex; gap: 18px; }
+.link{
+  color: #e5e7eb;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 10px;
+  transition: .2s ease;
+}
+.link:hover{
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
