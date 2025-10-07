@@ -168,40 +168,38 @@
   .tabla-container {
     max-height: 400px;
     overflow-y: auto;
+    overflow-x: auto; /* ✅ Scroll horizontal agregado */
     border-radius: 8px;
     border: 2px solid #e0e0e0;
     margin-bottom: 20px;
-  }
-  
-  .tabla-resultados {
     width: 100%;
-    border-collapse: collapse;
-    background: white;
   }
-  
-  .tabla-resultados thead {
-    position: sticky;
-    top: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    z-index: 10;
-  }
-  
-  .tabla-resultados th {
-    padding: 14px;
-    text-align: left;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .tabla-resultados td {
-    padding: 12px 14px;
-    border-bottom: 1px solid #e0e0e0;
-    color: #333;
-    font-size: 0.95rem;
-  }
+  /* La tabla ahora tiene un ancho mínimo grande para forzar scroll si se requiere */
+.tabla-resultados {
+  width: 100%;
+  min-width: 950px; /* ✅ Previene que se comprima */
+  border-collapse: collapse;
+  background: white;
+  table-layout: fixed; /* Evita desbordes extraños en celdas */
+}
+
+.tabla-resultados thead {
+  position: sticky;
+  top: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  z-index: 10;
+}
+
+.tabla-resultados th,
+.tabla-resultados td {
+  padding: 12px 14px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+  color: #333;
+  font-size: 0.95rem;
+  white-space: nowrap; /* ✅ Evita saltos de línea en columnas */
+}
   
   .tabla-resultados tbody tr:hover {
     background: #f0f4ff;
