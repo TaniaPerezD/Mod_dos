@@ -168,15 +168,20 @@
   .tabla-container {
     max-height: 400px;
     overflow-y: auto;
+    overflow-x: auto; /* ✅ Scroll horizontal agregado */
     border-radius: 8px;
     border: 2px solid #e0e0e0;
     margin-bottom: 20px;
+    width: 100%;
   }
   
+  /* La tabla conserva estructura estable y scroll si es necesario */
   .tabla-resultados {
     width: 100%;
+    min-width: 950px; /* ✅ Previene que se comprima demasiado */
     border-collapse: collapse;
     background: white;
+    table-layout: fixed; /* ✅ Mantiene columnas bien alineadas */
   }
   
   .tabla-resultados thead {
@@ -187,21 +192,30 @@
     z-index: 10;
   }
   
+  /* ✅ Encabezados ajustables con salto de línea automático */
   .tabla-resultados th {
-    padding: 14px;
-    text-align: left;
+    padding: 10px 8px;
+    text-align: center;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    white-space: normal; /* ✅ Permite salto de línea */
+    word-wrap: break-word; /* ✅ Asegura ajuste dentro de la celda */
+    line-height: 1.2; /* ✅ Mejor legibilidad */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   }
   
+  /* ✅ Celdas normales */
   .tabla-resultados td {
-    padding: 12px 14px;
+    padding: 10px 12px;
+    text-align: center;
     border-bottom: 1px solid #e0e0e0;
     color: #333;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
   }
+  
   
   .tabla-resultados tbody tr:hover {
     background: #f0f4ff;
