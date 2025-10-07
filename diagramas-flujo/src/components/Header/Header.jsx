@@ -15,6 +15,8 @@ export default function Header() {
           <nav className={styles.nav}>
             <Link to="/inicio" className={styles.link}>Inicio</Link>
             <Link to="/azucar" className={styles.link}>azucar</Link>
+            <Link to="/tienda" className={styles.link}>tienda</Link>
+            <Link to="/huevos" className={styles.link}>Huevos</Link>
             <Link to="/multiplicativo" className={styles.link}>Multiplicativo</Link>
           </nav>
         </div>
