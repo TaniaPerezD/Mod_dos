@@ -9,14 +9,38 @@ export default function Dados() {
   const [gananciaJugador, setGananciaJugador] = useState(5);
   const [resultados, setResultados] = useState([]);
   const [promedio, setPromedio] = useState(null);
+  const [errores, setErrores] = useState({});
+
+  const validarCampos = () => {
+    const nuevosErrores = {};
+
+    if (!numSimulaciones || numSimulaciones <= 0)
+      nuevosErrores.numSimulaciones = "Debe ingresar un número mayor a 0.";
+
+    if (!numJuegos || numJuegos <= 0)
+      nuevosErrores.numJuegos = "Debe ingresar un número mayor a 0.";
+
+    if (costoJuego < 0)
+      nuevosErrores.costoJuego = "El costo no puede ser negativo.";
+
+    if (gananciaJugador < 0)
+      nuevosErrores.gananciaJugador = "La ganancia no puede ser negativa.";
+
+    setErrores(nuevosErrores);
+
+    return Object.keys(nuevosErrores).length === 0;
+  };
 
   const manejarSimulacion = () => {
+    if (!validarCampos()) return;
+
     const { resultados, promedio } = simularJuegos({
       numSimulaciones,
       numJuegos,
       costoJuego,
       gananciaJugador,
     });
+
     setResultados(resultados);
     setPromedio(promedio);
   };
@@ -24,6 +48,7 @@ export default function Dados() {
   const limpiar = () => {
     setResultados([]);
     setPromedio(null);
+    setErrores({});
   };
 
   return (
@@ -42,6 +67,7 @@ export default function Dados() {
               <div className="card">
                 <h3>Configuración de la Simulación</h3>
 
+                {/* N° de Simulaciones */}
                 <div className="input-group">
                   <label>N° de Simulaciones:</label>
                   <input
@@ -49,9 +75,14 @@ export default function Dados() {
                     min="1"
                     value={numSimulaciones}
                     onChange={(e) => setNumSimulaciones(Number(e.target.value))}
+                    className={errores.numSimulaciones ? "input-error" : ""}
                   />
+                  {errores.numSimulaciones && (
+                    <p className="error-msg">{errores.numSimulaciones}</p>
+                  )}
                 </div>
 
+                {/* N° de Juegos */}
                 <div className="input-group">
                   <label>N° de Juegos:</label>
                   <input
@@ -59,9 +90,14 @@ export default function Dados() {
                     min="1"
                     value={numJuegos}
                     onChange={(e) => setNumJuegos(Number(e.target.value))}
+                    className={errores.numJuegos ? "input-error" : ""}
                   />
+                  {errores.numJuegos && (
+                    <p className="error-msg">{errores.numJuegos}</p>
+                  )}
                 </div>
 
+                {/* Costo del Juego */}
                 <div className="input-group">
                   <label>Costo del Juego (Bs):</label>
                   <input
@@ -69,9 +105,14 @@ export default function Dados() {
                     min="0"
                     value={costoJuego}
                     onChange={(e) => setCostoJuego(Number(e.target.value))}
+                    className={errores.costoJuego ? "input-error" : ""}
                   />
+                  {errores.costoJuego && (
+                    <p className="error-msg">{errores.costoJuego}</p>
+                  )}
                 </div>
 
+                {/* Ganancia del Jugador */}
                 <div className="input-group">
                   <label>Ganancia del Jugador (Bs):</label>
                   <input
@@ -79,7 +120,11 @@ export default function Dados() {
                     min="0"
                     value={gananciaJugador}
                     onChange={(e) => setGananciaJugador(Number(e.target.value))}
+                    className={errores.gananciaJugador ? "input-error" : ""}
                   />
+                  {errores.gananciaJugador && (
+                    <p className="error-msg">{errores.gananciaJugador}</p>
+                  )}
                 </div>
 
                 <div className="botones">
@@ -135,15 +180,21 @@ export default function Dados() {
                     <div className="estadisticas-grid">
                       <div className="stat-item">
                         <span className="stat-label">GNETA Promedio:</span>
-                        <span className="stat-value">{promedio.promedioGanancia} Bs</span>
+                        <span className="stat-value">
+                          {promedio.promedioGanancia} Bs
+                        </span>
                       </div>
                       <div className="stat-item">
                         <span className="stat-label">NJUEG Promedio:</span>
-                        <span className="stat-value">{promedio.promedioJuegos}</span>
+                        <span className="stat-value">
+                          {promedio.promedioJuegos}
+                        </span>
                       </div>
                       <div className="stat-item">
                         <span className="stat-label">PJUEG Promedio:</span>
-                        <span className="stat-value">{promedio.promedioPorcentaje}%</span>
+                        <span className="stat-value">
+                          {promedio.promedioPorcentaje}%
+                        </span>
                       </div>
                     </div>
                   </div>
