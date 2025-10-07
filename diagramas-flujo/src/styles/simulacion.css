@@ -174,32 +174,48 @@
     margin-bottom: 20px;
     width: 100%;
   }
-  /* La tabla ahora tiene un ancho mínimo grande para forzar scroll si se requiere */
-.tabla-resultados {
-  width: 100%;
-  min-width: 950px; /* ✅ Previene que se comprima */
-  border-collapse: collapse;
-  background: white;
-  table-layout: fixed; /* Evita desbordes extraños en celdas */
-}
-
-.tabla-resultados thead {
-  position: sticky;
-  top: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  z-index: 10;
-}
-
-.tabla-resultados th,
-.tabla-resultados td {
-  padding: 12px 14px;
-  text-align: center;
-  border-bottom: 1px solid #e0e0e0;
-  color: #333;
-  font-size: 0.95rem;
-  white-space: nowrap; /* ✅ Evita saltos de línea en columnas */
-}
+  
+  /* La tabla conserva estructura estable y scroll si es necesario */
+  .tabla-resultados {
+    width: 100%;
+    min-width: 950px; /* ✅ Previene que se comprima demasiado */
+    border-collapse: collapse;
+    background: white;
+    table-layout: fixed; /* ✅ Mantiene columnas bien alineadas */
+  }
+  
+  .tabla-resultados thead {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    z-index: 10;
+  }
+  
+  /* ✅ Encabezados ajustables con salto de línea automático */
+  .tabla-resultados th {
+    padding: 10px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: normal; /* ✅ Permite salto de línea */
+    word-wrap: break-word; /* ✅ Asegura ajuste dentro de la celda */
+    line-height: 1.2; /* ✅ Mejor legibilidad */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* ✅ Celdas normales */
+  .tabla-resultados td {
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  
   
   .tabla-resultados tbody tr:hover {
     background: #f0f4ff;

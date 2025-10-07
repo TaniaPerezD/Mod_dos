@@ -1,6 +1,6 @@
 // --- Simulación del inventario de azúcar ---
 // Distribución de demanda: exponencial (media = meanDemand)
-// Tiempo de entrega: uniforme entre 1 y 3 días
+// Tiempo de entrega: uniforme entre 1 y 3 días (entero)
 // Cada 7 días se revisa el inventario y se ordena lo necesario
 
 // ======== FUNCIONES AUXILIARES ========
@@ -11,9 +11,9 @@ function expRand(mean) {
     return -Math.log(1 - u) * mean;
   }
   
-  // Genera un número aleatorio uniforme entre a y b
-  function uniformRand(a, b) {
-    return a + (b - a) * Math.random();
+  // Genera un número aleatorio entero entre a y b (incluidos)
+  function uniformRandInt(a, b) {
+    return Math.floor(Math.random() * (b - a + 1)) + a;
   }
   
   // ======== FUNCIÓN PRINCIPAL ========
@@ -29,111 +29,111 @@ function expRand(mean) {
     initialInventory = capacity,
   }) {
     const reviewPeriod = 7;
-    const leadMin = 1;
-    const leadMax = 3;
   
-    // --- Variables de estado ---
-    let CD = 0; // contador días
-    let IAZU = initialInventory; // inventario actual
-    let PAZU = 0; // pedido del día
-    let TENT = Infinity; // tiempo de entrega restante
+    // Variables de estado
+    let CD = 0; // Día actual
+    let IAZU = initialInventory; // Inventario actual
+    let PAZU = 0; // Pedido del día
+    let TENT = "-"; // Tiempo de entrega
     let pendingOrders = [];
   
-    // --- Costos acumulados ---
+    // Costos acumulados
     let CTORD = 0;
     let CTADQ = 0;
     let CTINV = 0;
     let CTOT = 0;
   
-    // --- Resultados globales ---
+    // Resultados globales
     let totalDemand = 0;
     let totalSold = 0;
     let totalLost = 0;
     let revenue = 0;
   
-    // --- Tabla de iteraciones ---
+    // Tabla de resultados diarios
     const tabla = [];
   
     for (CD = 1; CD <= horizonDays; CD++) {
-      // Llegadas pendientes
+      // Llegan pedidos
       for (let i = pendingOrders.length - 1; i >= 0; i--) {
-        if (pendingOrders[i].arrivalDay <= CD) {
-          const qty = pendingOrders[i].qty;
-          IAZU = Math.min(IAZU + qty, capacity);
+        if (pendingOrders[i].arrivalDay === CD) {
+          IAZU = Math.min(IAZU + pendingOrders[i].qty, capacity);
           pendingOrders.splice(i, 1);
         }
       }
   
-      // Revisión y pedido
+      // Revisión de inventario y pedido (cada 7 días)
       PAZU = 0;
       if (CD % reviewPeriod === 0) {
         const orderQty = Math.max(0, capacity - IAZU);
         if (orderQty > 0) {
           PAZU = orderQty;
-          const lead = uniformRand(leadMin, leadMax);
+          const lead = uniformRandInt(1, 3); // ENTERO entre 1 y 3
           const arrivalDay = CD + lead;
           pendingOrders.push({ qty: orderQty, arrivalDay });
           TENT = lead;
   
-          // Actualización de costos
           CTORD += orderCost;
           CTADQ += orderQty * unitAcqCost;
+        } else {
+          TENT = pendingOrders.length > 0
+            ? Math.min(...pendingOrders.map(o => o.arrivalDay - CD))
+            : "-";
         }
       } else {
         // Actualiza TENT según el pedido más próximo
         if (pendingOrders.length > 0) {
-          const next = Math.min(...pendingOrders.map(o => o.arrivalDay - CD));
-          TENT = Math.max(0, next);
+          TENT = Math.min(...pendingOrders.map(o => o.arrivalDay - CD));
         } else {
-          TENT = Infinity;
+          TENT = "-";
         }
       }
   
-      // --- Demanda diaria ---
-      const DAZU = expRand(meanDemand);
+      // Demanda diaria (REDONDEADA A ENTERO)
+      const DAZU = Math.round(expRand(meanDemand));
       totalDemand += DAZU;
+  
       const sold = Math.min(IAZU, DAZU);
-      const lost = Math.max(0, DAZU - sold);
+      const lost = DAZU - sold;
+  
       totalSold += sold;
       totalLost += lost;
       revenue += sold * unitSellPrice;
       IAZU -= sold;
   
-      // --- Costos ---
+      // Costos
       CTINV += IAZU * carryCostPerKgDay;
       CTOT = CTORD + CTADQ + CTINV;
   
-      // --- Guardar datos diarios ---
+      // Guardar resultados del día
       tabla.push({
         Día: CD,
         Inventario: IAZU.toFixed(2),
-        Demanda: DAZU.toFixed(2),
-        Pedido: PAZU.toFixed(2),
-        TiempoEntrega: isFinite(TENT) ? TENT.toFixed(2) : "∞",
+        Demanda: DAZU,
+        Pedido: PAZU,
+        TiempoEntrega: Number.isFinite(TENT) ? TENT : "-",
         CostoOrden: CTORD.toFixed(2),
         CostoAdquisicion: CTADQ.toFixed(2),
         CostoInventario: CTINV.toFixed(2),
         CostoTotal: CTOT.toFixed(2),
-        PerdidaAcumulada: totalLost.toFixed(2),
+        PerdidaAcumulada: totalLost,
       });
     }
   
-    // --- Resultados finales ---
+    // Resultados finales
     const resultados = {
-      DemandaTotal: totalDemand.toFixed(2),
-      TotalVendido: totalSold.toFixed(2),
-      DemandaInsatisfecha: totalLost.toFixed(2),
+      DemandaTotal: totalDemand,
+      TotalVendido: totalSold,
+      DemandaInsatisfecha: totalLost,
       CostoTotal: CTOT.toFixed(2),
       Ingresos: revenue.toFixed(2),
       GananciaNeta: (revenue - CTOT).toFixed(2),
       NivelServicio: ((totalSold / totalDemand) * 100).toFixed(2) + "%",
     };
   
-    // Devuelve ambos: la tabla diaria y el resumen
     return { tabla, resultados };
   }
   
-  // ======== EJEMPLO DE USO ========
+  // ======== EJECUCIÓN ========
   
   const salida = simularInventario({
     horizonDays: 27,
@@ -146,7 +146,6 @@ function expRand(mean) {
     initialInventory: 700,
   });
   
-  // Muestra resultados
   console.table(salida.tabla);
   console.log("=== RESULTADOS ===");
   console.log(salida.resultados);

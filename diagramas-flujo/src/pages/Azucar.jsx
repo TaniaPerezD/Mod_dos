@@ -29,7 +29,7 @@ function simularInventario({
   let CD = 0;
   let IAZU = initialInventory;
   let PAZU = 0;
-  let TENT = Infinity;
+  let TENT = "-";
   let pendingOrders = [];
 
   let CTORD = 0;
@@ -58,11 +58,14 @@ function simularInventario({
       const orderQty = Math.max(0, capacity - IAZU);
       if (orderQty > 0) {
         PAZU = orderQty;
-        const lead = uniformRand(leadMin, leadMax);
+        // Genera y redondea el tiempo de entrega (TENT) entre 1 y 3
+        let lead = uniformRand(leadMin, leadMax);
+        lead = Math.round(lead);
+        lead = Math.min(3, Math.max(1, lead)); // asegura que esté entre 1 y 3
         const arrivalDay = CD + lead;
         pendingOrders.push({ qty: orderQty, arrivalDay });
         TENT = lead;
-
+        
         CTORD += orderCost;
         CTADQ += orderQty * unitAcqCost;
       }
@@ -75,7 +78,7 @@ function simularInventario({
       }
     }
 
-    const DAZU = expRand(meanDemand);
+    const DAZU = Math.round(expRand(meanDemand));
     totalDemand += DAZU;
     const sold = Math.min(IAZU, DAZU);
     const lost = Math.max(0, DAZU - sold);
@@ -92,7 +95,7 @@ function simularInventario({
       Inventario: IAZU.toFixed(2),
       Demanda: DAZU.toFixed(2),
       Pedido: PAZU.toFixed(2),
-      TiempoEntrega: isFinite(TENT) ? TENT.toFixed(2) : "∞",
+      TiempoEntrega: isFinite(TENT) ? TENT.toFixed(2) : "-",
       CostoOrden: CTORD.toFixed(2),
       CostoAdquisicion: CTADQ.toFixed(2),
       CostoInventario: CTINV.toFixed(2),
@@ -265,12 +268,12 @@ export default function SimulacionEventos() {
                         <th>Inventario</th>
                         <th>Demanda</th>
                         <th>Pedido</th>
-                        <th>TiempoEntrega</th>
-                        <th>CostoOrden</th>
-                        <th>CostoAdquisicion</th>
-                        <th>CostoInventario</th>
-                        <th>CostoTotal</th>
-                        <th>PerdidaAcumulada</th>
+                        <th>Tiempo Entrega</th>
+                        <th>Costo Orden</th>
+                        <th>Costo Adquisicion</th>
+                        <th>Costo Inventario</th>
+                        <th>Costo Total</th>
+                        <th>Perdida Acumulada</th>
                       </tr>
                     </thead>
                     <tbody>
