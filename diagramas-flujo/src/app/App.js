@@ -2,6 +2,7 @@ import '../app/App.css';
 import Header from '../components/Header/Header';
 import Home from '../pages/Home';
 import Azucar from '../pages/Azucar';
+import Dados from '../pages/Dados';
 import Multiplicativo from '../pages/Multiplicativo';
 import Huevos from '../pages/Huevos';
 
@@ -19,6 +20,7 @@ export default function App() {
           {/* Tus páginas */}
           <Route path="/inicio" element={<Home />} />
           <Route path="/azucar" element={<Azucar />} />
+          <Route path="/dados" element={<Dados />} />
           <Route path="/multiplicativo" element={<Multiplicativo />} />
           <Route path="/huevos" element={<Huevos />} />
         </Routes>
