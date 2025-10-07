@@ -2,6 +2,7 @@ import '../app/App.css';
 import Header from '../components/Header/Header';
 import Home from '../pages/Home';
 import Azucar from '../pages/Azucar';
+import Tienda from '../pages/Tienda';
 import Multiplicativo from '../pages/Multiplicativo';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
@@ -18,6 +19,8 @@ export default function App() {
           {/* Tus páginas */}
           <Route path="/inicio" element={<Home />} />
           <Route path="/azucar" element={<Azucar />} />
+          <Route path="/tienda" element={<Tienda />} />
+
           <Route path="/multiplicativo" element={<Multiplicativo />} />
         </Routes>
       </main>
