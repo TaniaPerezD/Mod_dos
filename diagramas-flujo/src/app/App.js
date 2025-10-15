@@ -6,6 +6,8 @@ import Tienda from '../pages/Tienda';
 import Dados from '../pages/Dados';
 import Multiplicativo from '../pages/Multiplicativo';
 import Huevos from '../pages/Huevos';
+import TasaFija from '../pages/TasaFija';
+import TasaVariable from '../pages/TasaVariable';
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
@@ -29,6 +31,9 @@ export default function App() {
 
           <Route path="/multiplicativo" element={<Multiplicativo />} />
           <Route path="/huevos" element={<Huevos />} />
+          <Route path="/tasa-fija" element={<TasaFija />} />
+
+          <Route path="/tasa-variable" element={<TasaVariable />} />
         </Routes>
       </main>
     </Router>

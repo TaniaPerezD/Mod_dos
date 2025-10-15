@@ -3,7 +3,12 @@
     padding: 0;
     box-sizing: border-box;
   }
-  
+  .columnas {
+  display: grid;
+  grid-template-columns: 0.85fr 2.15fr; /* columna izquierda más angosta */
+  gap: 30px;
+  margin-top: 20px;
+}
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -331,4 +336,24 @@
   color: #e74c3c;
   font-size: 0.85rem;
   margin-top: 4px;
+}
+  
+
+.tabla-container-capital {
+width: 100%; /* se ajusta al ancho disponible */
+max-width: 480px; /* evita que sea demasiado ancha en el panel izquierdo */
+overflow-x: auto;
+border-radius: 1px;
+border: 1px solid #e5e5ea;
+background: #fff;
+box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+margin: 0 auto;
+}
+
+
+/* Que no se desborde en pantallas pequeñas */
+@media (max-width: 1024px) {
+.tabla-container-capital  {
+max-width: 80%;
+}
 }
