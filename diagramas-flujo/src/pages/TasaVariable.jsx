@@ -243,7 +243,7 @@ export default function TasaVariable() {
                     <thead>
                       <tr>
                         <th>Rango de capital</th>
-                        <th className="num">Tasa anual aplicada</th>
+                        <th className="num">Tasa aplicada</th>
                       </tr>
                     </thead>
                     <tbody>
