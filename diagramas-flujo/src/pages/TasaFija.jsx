@@ -24,7 +24,6 @@ function simularUnaFija({ anios, capitalInicial, tasa }) {
 
 export default function TasaFija() {
   // Parámetros
-  const [numSim, setNumSim] = useState(30);
   const [anios, setAnios] = useState(10);
   const [tasa, setTasa] = useState(0.035); // 3.5% por año
   const [capitalInicial, setCapitalInicial] = useState(10000);
@@ -38,7 +37,6 @@ export default function TasaFija() {
   const [error, setError] = useState('');
 
   function validar() {
-    if (numSim < 1) return 'El número de simulaciones debe ser ≥ 1.';
     if (anios < 1) return 'Los años deben ser ≥ 1.';
     if (tasa < 0) return 'La tasa no puede ser negativa.';
     if (usarRango) {
@@ -50,44 +48,44 @@ export default function TasaFija() {
     return '';
   }
 
+  function limpiar() {
+    setResultados(null);
+    setError('');
+  }
+
   function simular() {
     const msg = validar();
     if (msg) { setError(msg); setResultados(null); return; }
     setError('');
 
+    // Capital inicial usado (si hay rango, se toma UNA vez)
+    let capital = usarRango
+      ? (capitalMin + Math.random() * (capitalMax - capitalMin))
+      : capitalInicial;
+
+    const capitalInicialUsado = capital;
     const filas = [];
-    let sumK = 0, sumR = 0;
+    let sumaIntereses = 0;
 
-    for (let i = 0; i < numSim; i++) {
-      const K0 = usarRango
-        ? (capitalMin + Math.random() * (capitalMax - capitalMin))
-        : capitalInicial;
-
-      const r = simularUnaFija({
-        anios: Math.floor(anios),
-        capitalInicial: K0,
-        tasa: Number(tasa),
-      });
+    for (let year = 1; year <= Math.floor(anios); year++) {
+      const interes = capital * Number(tasa);
+      sumaIntereses += interes;
+      capital += interes; // capital acumulado al final del año
 
       filas.push({
-        sim: i + 1,
-        capitalInicial: K0,
-        Kfinal: r.Kfinal,
-        interesTotal: r.interesTotal,
-        ingresoPromDia: r.interesTotal / (anios * 365), // referencia (no estrictamente del apunte)
+        anio: year,
+        interes,
+        capitalAcum: capital,
       });
-
-      sumK += r.Kfinal;
-      sumR += r.interesTotal;
     }
 
-    const promedios = {
-      capitalFinal: sumK / numSim,
-      interesTotal: sumR / numSim,
-      ingresoPromedioPorAnio: (sumR / numSim) / anios,
+    const resumen = {
+      capitalInicial: capitalInicialUsado,
+      sumaIntereses,
+      capitalFinal: capital,
     };
 
-    setResultados({ filas, promedios });
+    setResultados({ filas, resumen });
   }
 
   return (
@@ -104,15 +102,6 @@ export default function TasaFija() {
             <div className="card">
               <h3>Configuración</h3>
 
-              <div className="input-group">
-                <label>Número de simulaciones</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={numSim}
-                  onChange={(e) => setNumSim(parseInt(e.target.value || '0', 10))}
-                />
-              </div>
 
               <div className="input-group">
                 <label>Años (T)</label>
@@ -182,7 +171,12 @@ export default function TasaFija() {
                 )}
               </div>
 
-              <button className="btn-simular" onClick={simular}>Simular</button>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <button className="btn-simular" onClick={simular}>Simular</button>
+                <button className="btn-simular btn-secundario" onClick={limpiar}>
+                    Limpiar
+                  </button>
+              </div>
 
               {error && (
                 <div style={{ marginTop: 12, color: '#b00020', fontWeight: 600 }}>
@@ -196,53 +190,55 @@ export default function TasaFija() {
             <div className="card">
               <h3>Resultados</h3>
 
-              {!resultados ? (
-                <div className="sin-datos">Aún no hay datos. Configura y presiona “Simular”.</div>
-              ) : (
-                <>
-                  <div className="tabla-container" style={{ marginTop: 10 }}>
-                    <table className="tabla-resultados">
-                      <thead>
-                        <tr>
-                          <th>Sim</th>
-                          <th className="num">Capital inicial</th>
-                          <th className="num">Capital final</th>
-                          <th className="num">Interés total</th>
-                          <th className="num">Ingreso prom./día</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {resultados.filas.map((r) => (
-                          <tr key={r.sim}>
-                            <td>{r.sim}</td>
-                            <td className="num">Bs {formNum(r.capitalInicial)}</td>
-                            <td className="num">Bs {formNum(r.Kfinal)}</td>
-                            <td className="num">Bs {formNum(r.interesTotal)}</td>
-                            <td className="num">Bs {formNum(r.ingresoPromDia)}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+              <h3>Resultados</h3>
 
-                  <div className="estadisticas" style={{ marginTop: 16 }}>
-                    <h4>Estadísticas del lote</h4>
-                    <div className="estadisticas-grid">
-                      <div className="stat-item">
-                        <span className="stat-label">Capital final promedio</span>
-                        <span className="stat-value">Bs {formNum(resultados.promedios.capitalFinal)}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Interés total promedio</span>
-                        <span className="stat-value">Bs {formNum(resultados.promedios.interesTotal)}</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-label">Ingreso promedio por año</span>
-                        <span className="stat-value">Bs {formNum(resultados.promedios.ingresoPromedioPorAnio)}</span>
-                      </div>
+              <div className="tabla-container" style={{ marginTop: 10, maxHeight: '500px', overflowY: 'auto' }}>
+                <table className="tabla-resultados">
+                  <thead>
+                    <tr>
+                      <th>Año</th>
+                      <th className="num">Interés</th>
+                      <th className="num">Capital acumulado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {!resultados ? (
+                      <tr>
+                        <td colSpan={3} className="sin-datos" style={{ textAlign: 'center' }}>
+                          Ejecuta la simulación para ver los resultados
+                        </td>
+                      </tr>
+                    ) : (
+                      resultados.filas.map((r) => (
+                        <tr key={r.anio}>
+                          <td>{r.anio}</td>
+                          <td className="num">{formNum(r.interes)}</td>
+                          <td className="num">{formNum(r.capitalAcum)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {resultados?.resumen && (
+                <div className="estadisticas" style={{ marginTop: 16 }}>
+                  <h4>Resumen</h4>
+                  <div className="estadisticas-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                    <div className="stat-item">
+                      <span className="stat-label">Capital inicial</span>
+                      <span className="stat-value">Bs {formNum(resultados.resumen.capitalInicial)}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">Suma de intereses</span>
+                      <span className="stat-value">Bs {formNum(resultados.resumen.sumaIntereses)}</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-label">Capital final</span>
+                      <span className="stat-value">Bs {formNum(resultados.resumen.capitalFinal)}</span>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </div>
           </section>
